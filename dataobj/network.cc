@@ -513,6 +513,7 @@ const char *network_send_file( uint32 client_id, const char *filename )
 		s = clients[client_id];
 	}
 	if (s==INVALID_SOCKET) {
+		fclose(fp);
 		return "Client closed connection during transfer";
 	}
 	// send size of file
@@ -529,6 +530,7 @@ const char *network_send_file( uint32 client_id, const char *filename )
 		int bytes_read = (int)fread( buffer, 1, sizeof(buffer), fp );
 		if(  send(s,buffer,bytes_read,0)==-1) {
 			network_remove_client(s);
+			fclose(fp);
 			return "Client closed connection during transfer";
 		}
 		bytes_sent += bytes_read;
@@ -536,6 +538,7 @@ const char *network_send_file( uint32 client_id, const char *filename )
 	}
 
 	// ok, new client has savegame
+	fclose(fp);
 	return NULL;
 }
 
